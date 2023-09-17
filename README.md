@@ -18,7 +18,7 @@ First, you need to have docker and postgreSQL installed on your machine. Then, y
 start the project:
 
 ```shell
-$ docker-compose up
+$ docker-compose up -d
 ```
 
 Create topic by this command:
