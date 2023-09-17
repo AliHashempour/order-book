@@ -7,8 +7,8 @@ import (
 	"log"
 )
 
-// Order Define the order struct for JSON marshaling
-type Order struct {
+// SampleOrder Define the order struct for JSON marshaling
+type SampleOrder struct {
 	OrderID string  `json:"order_id"`
 	Side    string  `json:"side"`
 	Symbol  string  `json:"symbol"`
@@ -31,7 +31,7 @@ func main() {
 	defer producer.Close()
 
 	// Sample list of orders
-	orders := []Order{
+	orders := []SampleOrder{
 		{"1", "buy", "AAPL", 10, 150.0},
 		{"2", "sell", "AAPL", 5, 2700.0},
 		{"3", "buy", "TSLA", 15, 700.0},
