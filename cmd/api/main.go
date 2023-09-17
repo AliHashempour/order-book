@@ -1,6 +1,7 @@
 package main
 
 import (
+	"book-orders/pkg/model"
 	"errors"
 	"fmt"
 	"github.com/joho/godotenv"
@@ -14,34 +15,24 @@ import (
 	"gorm.io/gorm"
 )
 
-// Order represents an order structure for database mapping
-type Order struct {
-	gorm.Model
-	OrderID string  `json:"order_id"`
-	Side    string  `json:"side"`
-	Symbol  string  `json:"symbol"`
-	Amount  float64 `json:"amount"`
-	Price   float64 `json:"price"`
-}
-
 func main() {
 	// Set up the PostgresSQL database connection
-	dsn, envErr := setUpDatabaseConfig()
-	if envErr != nil {
-		log.Fatalf("Error setting up database configuration: %v", envErr)
+	dsn, err := setUpDatabaseConfig()
+	if err != nil {
+		log.Fatalf("Error setting up database configuration: %v", err)
 	}
 
-	db, dbErr := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if dbErr != nil {
-		log.Fatalf("Error connecting to the database: %v", dbErr)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatalf("Error connecting to the database: %v", err)
 	}
 
 	// Start the Gin server
 	r := setupRouter(db)
 	port := 9090
 	fmt.Printf("Starting server on port %d...\n", port)
-	if serverErr := r.Run(fmt.Sprintf(":%d", port)); serverErr != nil {
-		log.Fatalf("Error starting server: %v", serverErr)
+	if err := r.Run(fmt.Sprintf(":%d", port)); err != nil {
+		log.Fatalf("Error starting server: %v", err)
 	}
 }
 
@@ -67,7 +58,7 @@ func getOrdersHandler(db *gorm.DB) gin.HandlerFunc {
 		if limit > 1000 {
 			limit = 1000
 		}
-		var buyOrders, sellOrders []Order
+		var buyOrders, sellOrders []model.Order
 
 		// Query buy and sell orders based on the symbol
 		db.Table("orders").Where("side = ? AND symbol = ?", "buy", symbol).
@@ -86,7 +77,7 @@ func getOrdersHandler(db *gorm.DB) gin.HandlerFunc {
 }
 
 // formatOrders formats a list of orders into the expected JSON format.
-func formatOrders(orders []Order) [][]string {
+func formatOrders(orders []model.Order) [][]string {
 	result := make([][]string, len(orders))
 	for i, order := range orders {
 		result[i] = []string{fmt.Sprintf("%.2f", order.Price), fmt.Sprintf("%.2f", order.Amount)}
@@ -109,7 +100,7 @@ func setupRouter(db *gorm.DB) *gin.Engine {
 	// Define a GET simple endpoint
 	r.GET("/", getHomeMessage)
 	// Define a POST endpoint to get buy and sell orders with a limit
-	r.POST("/get_orders", getOrdersHandler(db))
+	r.POST("/orders", getOrdersHandler(db))
 	return r
 }
 

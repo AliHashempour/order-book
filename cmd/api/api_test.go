@@ -1,6 +1,7 @@
 package main
 
 import (
+	"book-orders/pkg/model"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
@@ -19,7 +20,7 @@ func TestGetOrdersRoute(t *testing.T) {
 		path         string
 		expectedCode int
 	}{
-		{"POST", "/get_orders", http.StatusOK},
+		{"POST", "/orders", http.StatusOK},
 		{"GET", "/", http.StatusOK},
 	}
 	// Iterate through the test cases
@@ -40,7 +41,7 @@ func TestLoadEnv(t *testing.T) {
 
 func TestFormatOrders(t *testing.T) {
 	// Create a sample list of orders
-	orders := []Order{
+	orders := []model.Order{
 		{OrderID: "1", Side: "buy", Symbol: "AAPL", Amount: 10, Price: 150.0},
 		{OrderID: "2", Side: "sell", Symbol: "AAPL", Amount: 5, Price: 2700.0},
 	}
@@ -50,7 +51,6 @@ func TestFormatOrders(t *testing.T) {
 	expected := [][]string{
 		{"150.00", "10.00"},
 		{"2700.00", "5.00"},
-		// Add more expected values as needed
 	}
 	assert.Equal(t, expected, formatted, "Formatted orders should match the expected format")
 }

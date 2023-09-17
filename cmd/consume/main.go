@@ -1,6 +1,7 @@
 package main
 
 import (
+	"book-orders/pkg/model"
 	"encoding/json"
 	"fmt"
 	"github.com/joho/godotenv"
@@ -12,16 +13,6 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
-
-// Order Define the Order struct for database mapping
-type Order struct {
-	gorm.Model
-	OrderID string  `json:"order_id"`
-	Side    string  `json:"side"`
-	Symbol  string  `json:"symbol"`
-	Amount  float64 `json:"amount"`
-	Price   float64 `json:"price"`
-}
 
 var (
 	broker = "0.0.0.0:9092"
@@ -65,7 +56,7 @@ func main() {
 		log.Fatalf("Error connecting to the database: %v", err)
 	}
 
-	err = db.AutoMigrate(&Order{})
+	err = db.AutoMigrate(&model.Order{})
 	if err != nil {
 		log.Fatalf("Error auto-migrating the database: %v", err)
 	} // Auto-create the "orders" table
@@ -89,7 +80,7 @@ func main() {
 			switch e := ev.(type) {
 			case *kafka.Message:
 				// Unmarshal the Kafka message into an Order struct
-				var order Order
+				var order model.Order
 				if err := json.Unmarshal(e.Value, &order); err != nil {
 					log.Printf("Error decoding message: %v", err)
 				} else {
