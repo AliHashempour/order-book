@@ -13,7 +13,7 @@ func TestGetOrdersRoute(t *testing.T) {
 	// Create a test router
 	r := gin.Default()
 	r.GET("/", nil)
-	r.POST("/get_orders", nil)
+	r.POST("/orders", nil)
 	// Define test cases for the /get_orders route
 	testCases := []struct {
 		method       string
